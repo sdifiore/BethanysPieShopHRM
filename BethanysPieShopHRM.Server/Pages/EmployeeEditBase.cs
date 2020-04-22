@@ -31,12 +31,36 @@ namespace BethanysPieShopHRM.Server.Pages
 
         protected string JobCategoryId = string.Empty;
 
+        protected string Message = string.Empty;
+
+        protected string StatusClass = string.Empty;
+
+        protected bool Saved;
+
         protected override async Task OnInitializedAsync()
         {
-            Employee = await EmployeeDataService.GetEmployeeDetails(int.Parse(EmployeeId));
+            //Employee = await EmployeeDataService.GetEmployeeDetails(int.Parse(EmployeeId));
             Countries = (await CountryDataService.GetAllCountries()).ToList();
             CountryId = Employee.CountryId.ToString();
             JobCategoryId = Employee.JobCategoryId.ToString();
+
+            int.TryParse(EmployeeId, out var employeeId);
+        }
+
+        protected async Task HandleValidSumbit()
+        {
+            Employee.CountryId = int.Parse(CountryId);
+            Employee.JobCategoryId = int.Parse(JobCategoryId);
+
+            if (Employee.EmployeeId == 0)
+            {
+                var addedEmployee = await EmployeeDataService.AddEmployee(Employee);
+            }
+
+            else
+            {
+                await EmployeeDataService.UpdateEmployee(Employee);
+            }
         }
     }
 }
